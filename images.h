@@ -118,4 +118,33 @@ Base_image<T> vertical_stripe(double d, T this_way, T that_way) {
   };
 }
 
+inline Image cond(Region region, Image this_way, Image that_way) {
+  return [=](const Point p) {
+    return (region(p) ? this_way(p) : that_way(p));
+  };
+}
+
+inline Image lerp(Blend blend, Image this_way, Image that_way) {
+  return [=](const Point p) {
+    Color this_ = this_way(p);
+    Color that_ = that_way(p);
+    Fraction blend_ = blend(p);
+    Color res = this_.weighted_mean(that_, blend_);
+    return res;
+  };
+}
+
+inline Image darken(Image image, Blend blend) {
+  return [=](const Point p) {
+    Image black = constant<Color>(Colors::black);
+    return lerp(blend, image, black)(p);
+  };
+}
+
+inline Image lighten(Image image, Blend blend) {
+  return [=](const Point p) {
+    Image white = constant<Color>(Colors::white);
+    return lerp(blend, image, white)(p);
+  };
+}
 #endif  // IMAGES_H
