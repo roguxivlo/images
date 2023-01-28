@@ -43,10 +43,10 @@ main()
   //            width,
   //            height,
   //            polar_checker(10., 4, Colors::Vermilion, Colors::blue));
-  // create_BMP("rings.bmp",
-  //            width,
-  //            height,
-  //            rings(Point(50., 100.), 10., Colors::Vermilion, Colors::blue));
+  create_BMP("rings.bmp",
+             width,
+             height,
+             rings(Point(50., 100.), 10., Colors::Vermilion, Colors::blue));
   create_BMP("vertical_stripe.bmp",
              width,
              height,

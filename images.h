@@ -30,9 +30,9 @@ Base_image<T> rotate(Base_image<T> image, double phi) {
   return [image, phi](const Point p) {
     double fi = (phi < 0 ? phi + 2 * M_PI : phi);
 
-    auto h = [image](const Coordinate rho, const Coordinate ang) {
-      return image(Point(rho, ang, true));
-    };
+    // auto h = [image](const Coordinate rho, const Coordinate ang) {
+    //   return image(Point(rho, ang, true));
+    // };
     auto f1 = [](Point p_polar) { return p_polar.first; };
     auto f2 = [fi](Point p_polar) {
       return (p_polar.second - fi < 0 ? p_polar.second - fi + 2 * M_PI
@@ -41,7 +41,10 @@ Base_image<T> rotate(Base_image<T> image, double phi) {
     auto to_polar_lambda = [](const Point p) {
       return (p.is_polar ? p : to_polar(p));
     };
-    return compose(to_polar_lambda, lift(h, f1, f2))(p);
+    auto to_cartesian_lambda = [](const double rho, const double ang) {
+      return from_polar(Point(rho, ang, true));
+    };
+    return compose(to_polar_lambda, lift(to_cartesian_lambda, f1, f2), image)(p);
   };
 }
 
@@ -55,9 +58,6 @@ Base_image<T> translate(Base_image<T> image, Vector v) {
     auto translate_cartesian = [v](Point p_cartesian) {
       return Point(p_cartesian.first - v.first, p_cartesian.second - v.second,
                    false);
-    };
-    auto to_cartesian_lambda = [](const Point p) {
-      return (p.is_polar ? from_polar(p) : p);
     };
     return compose(translate_cartesian,
                    image_from_cartesian)(p);
@@ -74,10 +74,7 @@ Base_image<T> scale(Base_image<T> image, double s) {
     auto scale_cartesian = [s](Point p_cartesian) {
       return Point(p_cartesian.first / s, p_cartesian.second / s, false);
     };
-    auto to_cartesian_lambda = [](const Point p) {
-      return (p.is_polar ? from_polar(p) : p);
-    };
-    return compose(to_cartesian_lambda, scale_cartesian,
+    return compose(scale_cartesian,
                    image_from_cartesian)(p);
   };
 }
@@ -96,21 +93,28 @@ Base_image<T> checker(double d, T this_way, T that_way) {
     return std::floor(p_cartesian.second / d);
   };
   auto h = [=](int x, int y) { return (x + y) % 2 == 0 ? this_way : that_way; };
-  auto to_cartesian_lambda = [](const Point p) {
-    return (p.is_polar ? from_polar(p) : p);
-  };
-  return compose(to_cartesian_lambda, lift(h, f1, f2));
+  return compose(lift(h, f1, f2));
 }
 
-// template <typename T>
-// Base_image<T> polar_checker(double d, int n, T this_way, T that_way) {
-//   // Assume that n % 2 == 0
-// }
+template <typename T>
+Base_image<T> rings(Point q, double d, T this_way, T that_way) {
+  // Assume that n % 2 == 0
+  auto to_polar_lambda = [](const Point p) {
+    return (p.is_polar ? p : to_polar(p));
+  };
+  auto to_cartesian_lambda = [q]() {
+    return q.is_polar ? from_polar(q) : q;
+  };
+  Point q_cartesian = to_cartesian_lambda();
+  Vector q_vec = Vector(q_cartesian.first, q_cartesian.second);
+  Base_image<T> im = compose(to_polar_lambda, checker(d, this_way, that_way));
+  return translate(im, q_vec);
+}
 
 template <typename T>
 Base_image<T> vertical_stripe(double d, T this_way, T that_way) {
   return [=](const Point p) {
-    return (p.first <= d && p.first >= -d ? this_way : that_way);
+    return (p.first <= d/2 && p.first >= -d/2 ? this_way : that_way);
   };
 }
 
