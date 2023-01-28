@@ -12,7 +12,7 @@ auto compose(Fun fun) {
 
 template <typename F, typename... Fun>
 auto compose(F f, Fun... funs) {
-  return [=](auto x) { return f(compose(funs...)(x)); };
+  return lift(compose(funs...), f);
 }
 
 template <typename H>
