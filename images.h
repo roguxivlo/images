@@ -59,7 +59,7 @@ Base_image<T> translate(Base_image<T> image, Vector v) {
     auto to_cartesian_lambda = [](const Point p) {
       return (p.is_polar ? from_polar(p) : p);
     };
-    return compose(to_cartesian_lambda, translate_cartesian,
+    return compose(translate_cartesian,
                    image_from_cartesian)(p);
   };
 }

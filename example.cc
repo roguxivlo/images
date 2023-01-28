@@ -47,10 +47,10 @@ main()
   //            width,
   //            height,
   //            rings(Point(50., 100.), 10., Colors::Vermilion, Colors::blue));
-  // create_BMP("vertical_stripe.bmp",
-  //            width,
-  //            height,
-  //            vs);
+  create_BMP("vertical_stripe.bmp",
+             width,
+             height,
+             vs);
   // create_BMP("cond.bmp",
   //            width,
   //            height,
