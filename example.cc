@@ -39,10 +39,10 @@ main()
              width,
              height,
              checker(10., Colors::Vermilion, Colors::blue));
-  // create_BMP("polar_checker.bmp",
-  //            width,
-  //            height,
-  //            polar_checker(10., 4, Colors::Vermilion, Colors::blue));
+  create_BMP("polar_checker.bmp",
+             width,
+             height,
+             polar_checker(10., 4, Colors::Vermilion, Colors::blue));
   create_BMP("rings.bmp",
              width,
              height,

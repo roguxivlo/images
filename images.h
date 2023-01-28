@@ -93,12 +93,11 @@ Base_image<T> checker(double d, T this_way, T that_way) {
     return std::floor(p_cartesian.second / d);
   };
   auto h = [=](int x, int y) { return (x + y) % 2 == 0 ? this_way : that_way; };
-  return compose(lift(h, f1, f2));
+  return lift(h, f1, f2);
 }
 
 template <typename T>
 Base_image<T> rings(Point q, double d, T this_way, T that_way) {
-  // Assume that n % 2 == 0
   auto to_polar_lambda = [](const Point p) {
     return (p.is_polar ? p : to_polar(p));
   };
@@ -109,6 +108,18 @@ Base_image<T> rings(Point q, double d, T this_way, T that_way) {
   Vector q_vec = Vector(q_cartesian.first, q_cartesian.second);
   Base_image<T> im = compose(to_polar_lambda, checker(d, this_way, that_way));
   return translate(im, q_vec);
+}
+
+template<typename T>
+Base_image<T> polar_checker(double d, int n, T this_way, T that_way) {
+  auto to_polar_lambda = [](const Point p) {
+    return (p.is_polar ? p : to_polar(p));
+  };
+
+  auto f = [=](Point p_polar) {
+    return Point(p_polar.first, (d * p_polar.second) / (2 * M_PI / n));
+  };
+  return compose(to_polar_lambda, f, checker(d, this_way, that_way));
 }
 
 template <typename T>
